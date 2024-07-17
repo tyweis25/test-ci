@@ -1,7 +1,7 @@
 pipeline:
   name: Build java
   identifier: Build_java
-  projectIdentifier: default
+  projectIdentifier: test-ci
   orgIdentifier: default
   properties:
     ci:
