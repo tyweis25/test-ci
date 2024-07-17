@@ -1,0 +1,52 @@
+pipeline:
+  name: Build java
+  identifier: Build_java
+  projectIdentifier: default
+  orgIdentifier: default
+  properties:
+    ci:
+      codebase:
+        connectorRef: YOUR_CODE_REPO_CONNECTOR_ID
+        repoName: YOUR_REPO_NAME
+        build: <+input>
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        description: ""
+        type: CI
+        spec:
+          caching:
+            enabled: true
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Test
+                  name: RunTestsWithIntelligence
+                  identifier: RunTestsWithIntelligence
+                  spec:
+                    command: |-
+                      mvn test
+                      mvn package -DskipTests
+                    shell: Sh
+                    connectorRef: account.harnessImage
+                    image: maven:3.8-jdk-11
+                    intelligenceMode: true
+                    reports:
+                      - "target/surefire-reports/*.xml"
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: BuildAndPushDockerRegistry_1
+                  identifier: BuildAndPushDockerRegistry_1
+                  spec:
+                    connectorRef: YOUR_DOCKER_CONNECTOR_ID
+                    repo: YOUR_DOCKER_HUB_USERNAME/DOCKER_REPO_NAME
+                    tags:
+                      - <+pipeline.sequenceId>
